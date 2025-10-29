@@ -10,7 +10,7 @@
         body {
             font-family: 'Comic Neue', cursive;
             background-color: #f0f9ff; /* Light blue background */
-            padding-top: 80px; /* Add padding to avoid overlap with fixed header */
+            /* padding-top: 80px; Removed */
         }
         .speech-button {
             cursor: pointer;
@@ -26,12 +26,12 @@
             border-radius: 1rem;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 3.75rem; /* text-6xl */
+            font-size: 3rem; /* text-5xl */
             font-weight: 700;
             color: #be185d; /* pink-700 */
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -69,8 +69,8 @@
             min-height: auto; /* Ensure space for visuals */
         }
         .problem-text-container {
-            font-size: 3.75rem; /* text-6xl */
-            sm:font-size: 4.5rem; /* sm:text-7xl */
+            font-size: 3rem; /* text-5xl */
+            sm:font-size: 3.75rem; /* sm:text-6xl */
             font-weight: 700;
             color: #5b21b6; /* violet-800 */
             letter-spacing: 0.1em;
@@ -102,13 +102,13 @@
              display: flex;
              flex-wrap: wrap;
              justify-content: center;
-             font-size: 3rem; /* text-5xl */
+             font-size: 2.5rem; /* text-4xl */
         }
         /* Removed the .icon-group-number CSS rule */
 
         .word-problem-container {
-            font-size: 1.75rem; /* text-2xl */
-            md:font-size: 2rem; /* md:text-3xl */
+            font-size: 1.25rem; /* text-xl */
+            md:font-size: 1.5rem; /* md:text-2xl */
             font-weight: 700;
             color: #5b21b6; /* violet-800 */
             line-height: 1.5;
@@ -212,7 +212,7 @@
 
     </style>
 </head>
-<body class="p-4 md:p-8 text-gray-800">
+<body class="p-4 md:p-8 text-gray-800 flex items-center justify-center min-h-screen">
 
     <!-- Floating UI Elements -->
     <div id="score-display">
@@ -220,11 +220,11 @@
     </div>
     <button id="my-badges-btn" onclick="showMyBadges()" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-800 font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">My Badges 🏅</button>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-5xl mx-auto w-full flex flex-col pt-20 pb-4">
 
         <!-- Header -->
-        <header class="text-center mb-4">
-            <h1 class="text-4xl md:text-5xl font-bold text-violet-700">Subtraction Rules! 🎈</h1>
+        <header class="text-center mb-4 flex-shrink-0">
+            <h1 class="text-3xl md:text-4xl font-bold text-violet-700">Subtraction Rules! 🎈</h1>
             <div class="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 mt-2">
                 <p id="instructions" class="text-lg text-gray-600">Listen to the problem and click the right answer.</p>
                 <img src="https://placehold.co/32x32/3b82f6/ffffff?text=EN" alt="Speak in English" class="speech-button w-8 h-8" onclick="speak('Listen to the problem and click the right answer.', 'en-US')">
@@ -233,22 +233,22 @@
         </header>
 
         <!-- Quiz Area -->
-        <div id="quiz-area" class="problem-card text-center">
+        <div id="quiz-area" class="problem-card text-center flex-grow: 1 flex flex-col">
             <!-- Problem containers (will be shown/hidden by JS) -->
-            <div id="visual-problem-container" class="visual-problem-container mb-6"></div>
-            <div id="text-problem-container" class="problem-text-container mb-6"></div>
-            <div id="word-problem-container" class="word-problem-container mb-6"></div>
+            <div id="visual-problem-container" class="visual-problem-container flex-grow: 1 flex items-center justify-center"></div>
+            <div id="text-problem-container" class="problem-text-container flex-grow: 1 flex items-center justify-center"></div>
+            <div id="word-problem-container" class="word-problem-container flex-grow: 1 flex items-center justify-center"></div>
 
-            <div class="flex justify-center gap-4 mb-6">
+            <div class="flex justify-center gap-4 mb-4 flex-shrink-0">
                  <img src="https://placehold.co/48x48/3b82f6/ffffff?text=EN" alt="Listen in English" class="speech-button w-12 h-12 md:w-14 md:h-14" id="listen-en-btn">
                  <img src="https://placehold.co/48x48/16a34a/ffffff?text=AR" alt="Listen in Arabic" class="speech-button w-12 h-12 md:w-14 md:h-14" id="listen-ar-btn">
             </div>
-            <div id="options-container" class="flex justify-center flex-wrap gap-4"></div>
-            <p id="feedback" class="text-2xl font-bold h-8 mt-4"></p>
+            <div id="options-container" class="flex justify-center flex-wrap gap-4 flex-shrink-0"></div>
+            <p id="feedback" class="text-2xl font-bold h-8 mt-4 flex-shrink-0"></p>
         </div>
 
         <!-- Completion Screen -->
-        <div id="completion-screen" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg border-4 border-green-300">
+        <div id="completion-screen" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg border-4 border-green-300 flex-grow: 1 flex flex-col items-center justify-center">
             <div class="text-8xl mb-4">🎉</div>
             <h2 class="text-4xl font-bold text-green-600">Great Job!</h2>
             <p class="text-xl text-gray-700 mt-2 mb-6">You know your subtraction rules! What's next?</p>
@@ -443,7 +443,7 @@
             switch(currentGameMode) {
                 case 'pictures':
                     visualProblemContainer.innerHTML = `
-                        <div class="w-full text-center problem-text-container" style="font-size: 3.5rem; sm:font-size: 4rem; margin-bottom: 1rem; min-height: auto;">
+                        <div class="w-full text-center problem-text-container" style="font-size: 3rem; sm:font-size: 3.5rem; margin-bottom: 1rem; min-height: auto;">
                             ${q.minuend} - ${q.subtrahend} = ?
                         </div>
                         <div class="w-full flex items-center justify-center">
@@ -658,6 +658,9 @@
 
 </body>
 </html>
+
+
+
 
 
 
