@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtraction Rules Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: #f0f9ff; /* Light blue background */
+            padding-top: 80px; /* Add padding to avoid overlap with fixed header */
+        }
+        .speech-button {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .speech-button:hover {
+            transform: scale(1.1);
+        }
+        .answer-btn {
+            background-color: #fff;
+            border: 4px solid #f9a8d4; /* pink-300 */
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 3.75rem; /* text-6xl */
+            font-weight: 700;
+            color: #be185d; /* pink-700 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .answer-btn:hover:not(:disabled) {
+            background-color: #fce7f3; /* pink-100 */
+            transform: translateY(-4px);
+        }
+        .answer-btn.correct {
+            background-color: #4ade80; /* green-400 */
+            color: white;
+            border-color: #22c55e; /* green-500 */
+        }
+        .answer-btn.incorrect {
+            background-color: #f87171; /* red-400 */
+            color: white;
+            border-color: #ef4444; /* red-500 */
+            animation: shake 0.5s;
+        }
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .problem-card {
+            background-color: #fff;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 4px solid #a78bfa; /* violet-400 */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            min-height: auto; /* Ensure space for visuals */
+        }
+        .problem-text-container {
+            font-size: 3.75rem; /* text-6xl */
+            sm:font-size: 4.5rem; /* sm:text-7xl */
+            font-weight: 700;
+            color: #5b21b6; /* violet-800 */
+            letter-spacing: 0.1em;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .visual-problem-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 2.25rem; /* text-4xl */
+            min-height: 100px;
+        }
+        .icon-group {
+            display: flex;
+            /* flex-direction: column; */ /* Removed */
+            align-items: center;
+            background-color: #f3f4f6; /* gray-100 */
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            min-width: 150px;
+            border: 2px dashed #d1d5db; /* gray-300 */
+        }
+        .icon-group-icons {
+             display: flex;
+             flex-wrap: wrap;
+             justify-content: center;
+             font-size: 3rem; /* text-5xl */
+        }
+        /* Removed the .icon-group-number CSS rule */
+
+        .word-problem-container {
+            font-size: 1.75rem; /* text-2xl */
+            md:font-size: 2rem; /* md:text-3xl */
+            font-weight: 700;
+            color: #5b21b6; /* violet-800 */
+            line-height: 1.5;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            border: 4px solid #f59e0b; /* amber-500 */
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        /* Badge Animation */
+        #badge-award-icon {
+            font-size: 6rem;
+            animation: badge-pop 0.5s ease-out;
+        }
+        @keyframes badge-pop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Floating Score & Badges Button */
+        #score-display {
+            position: fixed;
+            top: 1.25rem;
+            left: 1.25rem;
+            background-color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            border: 4px solid #22c55e; /* green-500 */
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #166534; /* green-800 */
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        #my-badges-btn {
+            position: fixed;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 100;
+        }
+        
+        /* My Badges Modal Content */
+        .badge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f9fafb; /* gray-50 */
+            border-radius: 1rem;
+            border: 2px solid #e5e7eb; /* gray-200 */
+            transition: all 0.3s;
+        }
+        .badge-item.unearned {
+            opacity: 0.4;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .badge-item-icon {
+            font-size: 4rem;
+        }
+        .badge-item-text {
+            font-weight: 700;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+    </style>
+</head>
+<body class="p-4 md:p-8 text-gray-800">
+
+    <!-- Floating UI Elements -->
+    <div id="score-display">
+        Correct: <span id="correct-score">0</span> | Incorrect: <span id="incorrect-score">0</span>
+    </div>
+    <button id="my-badges-btn" onclick="showMyBadges()" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-800 font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">My Badges 🏅</button>
+
+    <div class="max-w-3xl mx-auto">
+
+        <!-- Header -->
+        <header class="text-center mb-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-violet-700">Subtraction Rules! 🎈</h1>
+            <div class="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 mt-2">
+                <p id="instructions" class="text-lg text-gray-600">Listen to the problem and click the right answer.</p>
+                <img src="https://placehold.co/32x32/3b82f6/ffffff?text=EN" alt="Speak in English" class="speech-button w-8 h-8" onclick="speak('Listen to the problem and click the right answer.', 'en-US')">
+                <img src="https://placehold.co/32x32/16a34a/ffffff?text=AR" alt="Speak in Arabic" class="speech-button w-8 h-8" onclick="speak('استمع إلى المسألة وانقر على الإجابة الصحيحة.', 'ar-SA')">
+            </div>
+        </header>
+
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="problem-card text-center">
+            <!-- Problem containers (will be shown/hidden by JS) -->
+            <div id="visual-problem-container" class="visual-problem-container mb-6"></div>
+            <div id="text-problem-container" class="problem-text-container mb-6"></div>
+            <div id="word-problem-container" class="word-problem-container mb-6"></div>
+
+            <div class="flex justify-center gap-4 mb-6">
+                 <img src="https://placehold.co/48x48/3b82f6/ffffff?text=EN" alt="Listen in English" class="speech-button w-12 h-12 md:w-14 md:h-14" id="listen-en-btn">
+                 <img src="https://placehold.co/48x48/16a34a/ffffff?text=AR" alt="Listen in Arabic" class="speech-button w-12 h-12 md:w-14 md:h-14" id="listen-ar-btn">
+            </div>
+            <div id="options-container" class="flex justify-center flex-wrap gap-4"></div>
+            <p id="feedback" class="text-2xl font-bold h-8 mt-4"></p>
+        </div>
+
+        <!-- Completion Screen -->
+        <div id="completion-screen" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg border-4 border-green-300">
+            <div class="text-8xl mb-4">🎉</div>
+            <h2 class="text-4xl font-bold text-green-600">Great Job!</h2>
+            <p class="text-xl text-gray-700 mt-2 mb-6">You know your subtraction rules! What's next?</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="restartQuiz('pictures')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Play Again (with pictures) 🍎</button>
+                <button onclick="restartQuiz('numbers')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Play without Pictures (numbers) 5️⃣</button>
+                <button onclick="restartQuiz('words')" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Play with Word Problems 📖</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Badge Award Modal -->
+    <div id="badge-modal" class="modal-overlay">
+        <div class="modal-content !border-green-400" id="badge-modal-content">
+            <!-- Content injected by JS -->
+            <!-- <div id="badge-award-icon">🌟</div>
+            <h2 class="text-3xl font-bold text-green-600">Super Streak!</h2>
+            <p class="text-lg text-gray-700">3 in a row! Keep it up!</p> -->
+        </div>
+    </div>
+
+    <!-- Need Help? Modal -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="text-6xl mb-4">🤔</div>
+            <h2 class="text-3xl font-bold text-amber-600">Need a little help?</h2>
+            <p class="text-lg text-gray-700 mt-2 mb-6">It's okay! What would you like to do?</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="showExplanation()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Get Explanation</button>
+                <button onclick="askTeacher()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Ask Teacher</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Explanation Modal -->
+    <div id="explanation-modal" class="modal-overlay">
+        <div class="modal-content !border-blue-400">
+             <div class="text-6xl mb-4">💡</div>
+            <h2 class="text-3xl font-bold text-blue-600">Subtraction Rules!</h2>
+            <div class="text-left space-y-4 my-6 text-lg">
+                <div class="flex items-center gap-4">
+                    <img src="https://placehold.co/32x32/3b82f6/ffffff?text=EN" alt="Speak EN" class="speech-button w-8 h-8" onclick="speak('Rule 1: Any number minus 0 is the same number.', 'en-US')">
+                    <p><strong class="text-blue-600">Rule 1:</strong> 5 - 0 = 5 <br> Any number minus 0 is the same number.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <img src="https://placehold.co/32x32/16a34a/ffffff?text=AR" alt="Speak AR" class="speech-button w-8 h-8" onclick="speak('القاعدة الأولى: أي رقم ناقص صفر يساوي نفس الرقم.', 'ar-SA')">
+                     <p class="text-right w-full">القاعدة الأولى: ٥ - ٠ = ٥ <br> أي رقم ناقص صفر يساوي نفس الرقم.</p>
+                </div>
+                <hr class="my-4">
+                <div class="flex items-center gap-4">
+                     <img src="https://placehold.co/32x32/3b82f6/ffffff?text=EN" alt="Speak EN" class="speech-button w-8 h-8" onclick="speak('Rule 2: Any number minus the same number is 0.', 'en-US')">
+                    <p><strong class="text-blue-600">Rule 2:</strong> 4 - 4 = 0 <br> Any number minus the same number is 0.</p>
+                </div>
+                 <div class="flex items-center gap-4">
+                    <img src="https://placehold.co/32x32/16a34a/ffffff?text=AR" alt="Speak AR" class="speech-button w-8 h-8" onclick="speak('القاعدة الثانية: أي رقم ناقص نفس الرقم يساوي صفر.', 'ar-SA')">
+                     <p class="text-right w-full">القاعدة الثانية: ٤ - ٤ = ٠ <br> أي رقم ناقص نفس الرقم يساوي صفر.</p>
+                </div>
+            </div>
+            <button onclick="hideExplanation()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Got it!</button>
+        </div>
+    </div>
+    
+    <!-- Ask Teacher Message -->
+    <div id="teacher-modal" class="modal-overlay">
+        <div class="modal-content !border-pink-400">
+            <div class="text-6xl mb-4">👋</div>
+            <h2 class="text-3xl font-bold text-pink-600">Great!</h2>
+            <p class="text-lg text-gray-700">Please raise your hand for your teacher.</p>
+            <button onclick="hideTeacherModal()" class="mt-6 bg-pink-400 hover:bg-pink-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">OK</button>
+        </div>
+    </div>
+    
+    <!-- My Badges Modal -->
+    <div id="my-badges-modal" class="modal-overlay">
+        <div class="modal-content !border-yellow-400">
+            <h2 class="text-3xl font-bold text-yellow-700 mb-6">My Badges 🏅</h2>
+            <div id="my-badges-content" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <!-- Badges will be injected by JS -->
+            </div>
+            <button onclick="hideMyBadges()" class="mt-8 bg-yellow-400 hover:bg-yellow-500 text-yellow-800 font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Close</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Data for the Quiz ---
+        const quizData = [
+            { minuend: 5, subtrahend: 0, answer: 5, options: [5, 0, 1], icon: '🍎', speech_en: 'What is five apples minus zero apples?', speech_ar: 'ما هو خمس تفاحات ناقص صفر تفاحات؟', word_problem_en: 'You have 5 apples. You eat 0. How many are left?', word_problem_ar: 'لديك ٥ تفاحات. أكلت ٠. كم تبقى؟' },
+            { minuend: 4, subtrahend: 4, answer: 0, options: [4, 1, 0], icon: '🚗', speech_en: 'What is four cars minus four cars?', speech_ar: 'ما هو أربع سيارات ناقص أربع سيارات؟', word_problem_en: 'There are 4 cars. 4 drive away. How many are left?', word_problem_ar: 'هناك ٤ سيارات. ٤ غادرت. كم تبقى؟' },
+            { minuend: 3, subtrahend: 0, answer: 3, options: [0, 3, 1], icon: '🎈', speech_en: 'What is three balloons minus zero balloons?', speech_ar: 'ما هو ثلاث بالونات ناقص صفر بالونات؟', word_problem_en: 'You have 3 balloons. 0 pop. How many are left?', word_problem_ar: 'لديك ٣ بالونات. ٠ فرقعت. كم تبقى؟' },
+            { minuend: 6, subtrahend: 6, answer: 0, options: [6, 0, 1], icon: '🐶', speech_en: 'What is six dogs minus six dogs?', speech_ar: 'ما هو ستة كلاب ناقص ستة كلاب؟', word_problem_en: '6 dogs are playing. 6 run home. How many are left?', word_problem_ar: '٦ كلاب تلعب. ٦ ركضت للبيت. كم تبقى؟' },
+            { minuend: 7, subtrahend: 0, answer: 7, options: [0, 1, 7], icon: '⭐', speech_en: 'What is seven stars minus zero stars?', speech_ar: 'ما هو سبع نجوم ناقص صفر نجوم؟', word_problem_en: 'You see 7 stars. 0 go away. How many stars are left?', word_problem_ar: 'ترى ٧ نجوم. ٠ اختفت. كم نجمة تبقى؟' },
+            { minuend: 2, subtrahend: 2, answer: 0, options: [2, 0, 1], icon: '🐱', speech_en: 'What is two cats minus two cats?', speech_ar: 'ما هو قطتان ناقص قطتان؟', word_problem_en: 'There are 2 cats. 2 run away. How many are left?', word_problem_ar: 'هناك قطتان. هربت اثنتان. كم تبقى؟' }
+        ];
+
+        let currentQuestionIndex = 0;
+        let shuffledQuizData = [];
+        let correctStreak = 0;
+        let incorrectStreak = 0;
+        let currentGameMode = 'pictures'; // 'pictures', 'numbers', or 'words'
+        
+        // Session-long tracking
+        let totalCorrect = 0;
+        let totalIncorrect = 0;
+        let earnedBadges = new Set();
+        
+        // Badge definitions
+        const badgeDefinitions = {
+            '3-streak': { icon: '🌟', text: 'Super Streak! (3 in a row)', title: 'Super Streak!' },
+            '5-streak': { icon: '🔥', text: 'Fire Streak! (5 in a row)', title: 'Fire Streak!' },
+            '10-streak': { icon: '🚀', text: 'Rocket Streak! (10 in a row)', title: 'Rocket Streak!' }
+        };
+
+        // --- DOM Elements ---
+        const quizArea = document.getElementById('quiz-area');
+        const completionScreen = document.getElementById('completion-screen');
+        const visualProblemContainer = document.getElementById('visual-problem-container');
+        const textProblemContainer = document.getElementById('text-problem-container');
+        const wordProblemContainer = document.getElementById('word-problem-container');
+        const listenEnBtn = document.getElementById('listen-en-btn');
+        const listenArBtn = document.getElementById('listen-ar-btn');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackEl = document.getElementById('feedback');
+        const correctScoreEl = document.getElementById('correct-score');
+        const incorrectScoreEl = document.getElementById('incorrect-score');
+        
+        // Modal DOM Elements
+        const badgeModal = document.getElementById('badge-modal');
+        const badgeModalContent = document.getElementById('badge-modal-content');
+        const helpModal = document.getElementById('help-modal');
+        const explanationModal = document.getElementById('explanation-modal');
+        const teacherModal = document.getElementById('teacher-modal');
+        const myBadgesModal = document.getElementById('my-badges-modal');
+        const myBadgesContent = document.getElementById('my-badges-content');
+        
+        // --- Text-to-Speech Functionality ---
+        function speak(text, lang) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // --- Shuffle function ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Render Visuals ---
+        function renderIcons(count, icon) { // Renamed from renderVisuals
+            let iconHTML = '';
+            for (let i = 0; i < count; i++) {
+                iconHTML += `<span>${icon}</span>`;
+            }
+            // If count is 0, show a 'zero' icon
+            if (count === 0) {
+                 iconHTML = '<span class="text-gray-400">🚫</span>';
+            }
+            return `
+                <div class="icon-group">
+                    <div class="icon-group-icons">${iconHTML}</div>
+                </div>
+            `;
+            // Removed the <span class="icon-group-number">...</span>
+        }
+
+        // --- Load a Question ---
+        function loadQuestion() {
+            if (currentQuestionIndex >= shuffledQuizData.length) {
+                showCompletionScreen();
+                return;
+            }
+
+            feedbackEl.textContent = '';
+            const q = shuffledQuizData[currentQuestionIndex];
+            
+            // Clear all problem containers
+            visualProblemContainer.innerHTML = '';
+            textProblemContainer.innerHTML = '';
+            wordProblemContainer.innerHTML = '';
+            
+            let speakEn = '';
+            let speakAr = '';
+
+            // Show problem based on game mode
+            switch(currentGameMode) {
+                case 'pictures':
+                    visualProblemContainer.innerHTML = `
+                        <div class="w-full text-center problem-text-container" style="font-size: 3.5rem; sm:font-size: 4rem; margin-bottom: 1rem; min-height: auto;">
+                            ${q.minuend} - ${q.subtrahend} = ?
+                        </div>
+                        <div class="w-full flex items-center justify-center">
+                            ${renderIcons(q.minuend, q.icon)}
+                            <span class="text-gray-500 mx-2 md:mx-4 text-5xl">-</span>
+                            ${renderIcons(q.subtrahend, q.icon)}
+                        </div>
+                    `;
+                    speakEn = q.speech_en;
+                    speakAr = q.speech_ar;
+                    break;
+                case 'numbers':
+                    textProblemContainer.textContent = `${q.minuend} - ${q.subtrahend} = ?`;
+                    speakEn = `${q.minuend} minus ${q.subtrahend}`;
+                    speakAr = `${q.minuend} ناقص ${q.subtrahend}`;
+                    break;
+                case 'words':
+                    wordProblemContainer.textContent = q.word_problem_en;
+                    speakEn = q.word_problem_en;
+                    speakAr = q.word_problem_ar;
+                    break;
+            }
+
+            // Update speech button listeners
+            listenEnBtn.onclick = () => speak(speakEn, 'en-US');
+            listenArBtn.onclick = () => speak(speakAr, 'ar-SA');
+            
+            // Speak the question in English automatically
+            speak(speakEn, 'en-US');
+
+            // Load answer options
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = shuffle([...q.options]);
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('answer-btn');
+                button.onclick = () => checkAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        // --- Check the Answer ---
+        function checkAnswer(selectedAnswer, button) {
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            const buttons = optionsContainer.querySelectorAll('button');
+            
+            buttons.forEach(btn => btn.disabled = true); // Disable all buttons
+
+            if (selectedAnswer === currentQuestion.answer) {
+                // Correct
+                feedbackEl.textContent = '✔️ Correct!';
+                feedbackEl.style.color = '#22c55e';
+                button.classList.add('correct');
+                speak('Correct!', 'en-US');
+                
+                correctStreak++;
+                incorrectStreak = 0;
+                totalCorrect++;
+                
+                // Check for badges
+                if (correctStreak === 3) showBadge('3-streak');
+                if (correctStreak === 5) showBadge('5-streak');
+                if (correctStreak === 10) showBadge('10-streak');
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 1500);
+
+            } else {
+                // Incorrect
+                feedbackEl.textContent = '❌ Try Again!';
+                feedbackEl.style.color = '#ef4444';
+                button.classList.add('incorrect');
+                speak('Oops, try again.', 'en-US');
+                
+                incorrectStreak++;
+                correctStreak = 0; // Reset correct streak
+                totalIncorrect++;
+                
+                if (incorrectStreak === 3) {
+                    showHelpModal();
+                }
+
+                // Find and show the correct button
+                buttons.forEach(btn => {
+                    if(parseInt(btn.textContent) === currentQuestion.answer) {
+                        btn.classList.add('correct');
+                    }
+                });
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 2000);
+            }
+            
+            // Update score display
+            correctScoreEl.textContent = totalCorrect;
+            incorrectScoreEl.textContent = totalIncorrect;
+        }
+
+        // --- New Modal Functions ---
+        
+        function showBadge(streakType) {
+            if (earnedBadges.has(streakType)) return; // Don't show badge if already earned this session
+            
+            const badge = badgeDefinitions[streakType];
+            if (!badge) return;
+            
+            earnedBadges.add(streakType);
+            
+            badgeModalContent.innerHTML = `
+                <div id="badge-award-icon">${badge.icon}</div>
+                <h2 class="text-3xl font-bold text-green-600">${badge.title}</h2>
+                <p class="text-lg text-gray-700">${badge.text} Keep it up!</p>
+            `;
+            badgeModal.classList.add('show');
+            speak(`${badge.title}! ${badge.text}!`, 'en-US');
+            
+            setTimeout(() => {
+                badgeModal.classList.remove('show');
+            }, 3000); // Hide badge after 3 seconds
+        }
+        
+        function showHelpModal() {
+            helpModal.classList.add('show');
+            speak('Do you need a little help?', 'en-US');
+            incorrectStreak = 0; // Reset streak
+        }
+        
+        function showExplanation() {
+            helpModal.classList.remove('show');
+            explanationModal.classList.add('show');
+            speak('Here are the subtraction rules.', 'en-US');
+        }
+        
+        function hideExplanation() {
+            explanationModal.classList.remove('show');
+            speak('Got it!', 'en-US');
+        }
+        
+        function askTeacher() {
+            helpModal.classList.remove('show');
+            teacherModal.classList.add('show');
+            speak('Great! Please raise your hand for your teacher.', 'en-US');
+        }
+        
+        function hideTeacherModal() {
+            teacherModal.classList.remove('show');
+        }
+        
+        function createBadgeDisplay(id, icon, text, earned) {
+            return `
+                <div class="badge-item ${earned ? '' : 'unearned'}">
+                    <div class="badge-item-icon">${icon}</div>
+                    <div class="badge-item-text">${text}</div>
+                </div>
+            `;
+        }
+        
+        function showMyBadges() {
+            myBadgesContent.innerHTML = ''; // Clear previous badges
+            
+            for (const [id, badge] of Object.entries(badgeDefinitions)) {
+                myBadgesContent.innerHTML += createBadgeDisplay(id, badge.icon, badge.text, earnedBadges.has(id));
+            }
+            
+            if (earnedBadges.size === 0) {
+                 myBadgesContent.innerHTML = `<p class="text-lg text-gray-500 col-span-full">You don't have any badges yet. Keep playing to earn them!</p>`;
+            }
+
+            myBadgesModal.classList.add('show');
+            speak('Here are your badges.', 'en-US');
+        }
+        
+        function hideMyBadges() {
+            myBadgesModal.classList.remove('show');
+        }
+
+
+        // --- Show Completion Screen ---
+        function showCompletionScreen() {
+            quizArea.classList.add('hidden');
+            completionScreen.classList.remove('hidden');
+            speak('Great job! You know your subtraction rules! What is next?', 'en-US');
+        }
+
+        // --- Restart Quiz ---
+        function restartQuiz(mode = 'pictures') {
+            currentGameMode = mode;
+            completionScreen.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            correctStreak = 0;
+            incorrectStreak = 0;
+            shuffledQuizData = shuffle([...quizData]);
+            loadQuestion();
+        }
+        
+        // --- Start the Quiz ---
+        function startQuiz() {
+            // Start with 'pictures' mode by default
+            restartQuiz('pictures');
+        }
+
+        // --- Initial call to start the quiz when the page loads ---
+        startQuiz();
+
+    </script>
+
+</body>
+</html>
+
+
+
+
